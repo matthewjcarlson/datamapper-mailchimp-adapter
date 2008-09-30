@@ -10,9 +10,9 @@ require 'dm-mailchimp-adapter'
 task :default => 'spec:run'
 
 PROJ.name = 'dm-mailchimp-adapter'
-PROJ.authors = 'FIXME (who is writing this software)'
-PROJ.email = 'FIXME (your e-mail)'
-PROJ.url = 'FIXME (project homepage)'
+PROJ.authors = 'Mandarin Soda'
+PROJ.email = ''
+PROJ.url = 'http://mandarinsoda.com'
 PROJ.rubyforge.name = 'dm-mailchimp-adapter'
 
 PROJ.spec.opts << '--color'
