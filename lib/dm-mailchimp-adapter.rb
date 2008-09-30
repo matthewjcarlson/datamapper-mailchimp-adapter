@@ -4,7 +4,10 @@
 # Used to prevent the class/module from being loaded more than once
 unless defined? DmMailchimpAdapter
 
-module DmMailchimpAdapter
+module DataMapper
+  module Adapters
+    class MailchimpAdapter < AbstractAdapter
+
 
   # :stopdoc:
   VERSION = '1.0.0'
@@ -47,9 +50,11 @@ module DmMailchimpAdapter
     Dir.glob(search_me).sort.each {|rb| require rb}
   end
 
-end  # module DmMailchimpAdapter
+end  # clas MailchimpAdapter
+end
+end
 
-DmMailchimpAdapter.require_all_libs_relative_to __FILE__
+MailchimpAdapter.require_all_libs_relative_to __FILE__
 
 end  # unless defined?
 

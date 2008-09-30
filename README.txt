@@ -1,10 +1,10 @@
 dm-mailchimp-adapter
-    by FIXME (your name)
-    FIXME (url)
+    by mandarinsoda
+    FIXME http://mandarinsoda.com
 
 == DESCRIPTION:
 
-FIXME (describe your package)
+A Datamapper adapter to access the MailChimp mailing list API
 
 == FEATURES/PROBLEMS:
 
@@ -20,13 +20,13 @@ FIXME (describe your package)
 
 == INSTALL:
 
-* FIXME (sudo gem install, anything else)
+sudo gem install
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2008 FIXME (different license?)
+Copyright (c) 2008 
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
