@@ -1,20 +1,47 @@
-# Look in the tasks/setup.rb file for the various options that can be
-# configured in this Rakefile. The .rake files in the tasks directory
-# are where the options are used.
-
-load 'tasks/setup.rb'
-
-ensure_in_path 'lib'
-require 'dm-mailchimp-adapter'
-
-task :default => 'spec:run'
-
-PROJ.name = 'dm-mailchimp-adapter'
-PROJ.authors = 'Mandarin Soda'
-PROJ.email = ''
-PROJ.url = 'http://mandarinsoda.com'
-PROJ.rubyforge.name = 'dm-mailchimp-adapter'
-
-PROJ.spec.opts << '--color'
-
-# EOF
+require 'rubygems'
+require 'rake/gempackagetask'
+require 'rubygems/specification'
+require 'date'
+ 
+GEM = "dm-mailchimp-adapter"
+GEM_VERSION = "1.0.0"
+AUTHOR = "MandarinSoda"
+EMAIL = ""
+HOMEPAGE = "http://merbist.com"
+SUMMARY = "A gem that provides..."
+ 
+spec = Gem::Specification.new do |s|
+  s.name = GEM
+  s.version = GEM_VERSION
+  s.platform = Gem::Platform::RUBY
+  s.has_rdoc = true
+  s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
+  s.summary = SUMMARY
+  s.description = s.summary
+  s.author = AUTHOR
+  s.email = EMAIL
+  s.homepage = HOMEPAGE
+  
+  # Uncomment this to add a dependency
+  # s.add_dependency "gvideo"
+  
+  s.require_path = 'lib'
+  s.autorequire = GEM
+  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,specs}/**/*")
+end
+ 
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
+end
+ 
+desc "install the gem locally"
+task :install => [:package] do
+  sh %{sudo gem install pkg/#{GEM}-#{GEM_VERSION}}
+end
+ 
+desc "create a gemspec file"
+task :make_spec do
+  File.open("#{GEM}.gemspec", "w") do |file|
+    file.puts spec.to_ruby
+  end
+end

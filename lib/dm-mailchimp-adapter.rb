@@ -1,4 +1,5 @@
 require 'xmlrpc/client'
+require 'dm-core'
 module MailChimpAPI
    class CreateError < StandardError; end
    class ReadError < StandardError; end
@@ -17,23 +18,23 @@ module DataMapper
         @authorization = @client.call("login", Merb::Config[:chimp_settings]['mail_chimp']['username'], Merb::Config[:chimp_settings]['mail_chimp']['password']) 
       end
 
-      def create(options)
+      def create(resources)
        chimp_subscribe(options)
       end
 
       def read_many(query)
-        raise NotImplementedError
+        chimp_all_members(query)
       end
       
       def read_one(query)
         chimp_read_member(query)
       end
       
-      def update(options)
+      def update(attributes, query)
         chimp_update(options)
       end
       
-      def delete(options)
+      def delete(query)
         chimp_remove(options)
       end
       
