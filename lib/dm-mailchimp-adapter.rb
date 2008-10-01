@@ -26,7 +26,7 @@ module DataMapper
       end
       
       def read_one(query)
-        raise NotImplementedError
+        chimp_read_member(query)
       end
       
       def update(options)
@@ -53,6 +53,14 @@ module DataMapper
       
       def chimp_update(options, email_content_type="html", replace_interests=false)
         @client.call("listUpdateMember", @authorization, options[:mailing_list_id], options[:email], email_content_type, replace_interests)    
+      end
+      
+      def chimp_read_member(options)
+        @client.call("listMemberInfo", @authorization, options[:mailing_list_id], options[:email])    
+      end
+      
+      def chimp_all_members(options)
+        @client.call("listMembers", @authorization, options[:mailing_list_id], options[:email], options[:page], options[:limit])    
       end
     end  
   end
