@@ -7,8 +7,8 @@ GEM = "dm-mailchimp-adapter"
 GEM_VERSION = "1.0.0"
 AUTHOR = "MandarinSoda"
 EMAIL = ""
-HOMEPAGE = "http://merbist.com"
-SUMMARY = "A gem that provides..."
+HOMEPAGE = "http://mandarinsoda.com"
+SUMMARY = "A gem that provides mailchimp api integration via a DataMapper Adapter"
  
 spec = Gem::Specification.new do |s|
   s.name = GEM
