@@ -8,7 +8,12 @@ A Datamapper adapter to access the MailChimp mailing list API.  BIG work in prog
 
 == FEATURES/PROBLEMS:
 
-* FIXME (list of features or problems)
+This adapter currently supported the following features:
+   - create will add a user to a specific MailChimp mailing list
+   - delete will remove a user from a specific MailChimp mailing list
+   - read_one will read the information for one user on a particular mailing
+   - read_all will read the information for all users on a particular mailing list
+   - udpdate will update a user's information on a particular list
 
 == SYNOPSIS:
 
