@@ -15,7 +15,7 @@ module DataMapper
       def initialize(name, uri_or_options)
         super(name, uri_or_options)
         @client = XMLRPC::Client.new2(CHIMP_URL)  
-        @authorization = @client.call("login", '', '') 
+        @authorization = @client.call("login", uri_or_options[:username], uri_or_options[:password]) 
       end
 
       def create(resources)
