@@ -15,11 +15,11 @@ module DataMapper
       def initialize(name, uri_or_options)
         super(name, uri_or_options)
         @client = XMLRPC::Client.new2(CHIMP_URL)  
-        @authorization = @client.call("login", Merb::Config[:chimp_settings]['mail_chimp']['username'], Merb::Config[:chimp_settings]['mail_chimp']['password']) 
+        @authorization = @client.call("login", '', '') 
       end
 
       def create(resources)
-       chimp_subscribe(options)
+       chimp_subscribe(resources)
       end
 
       def read_many(query)
@@ -41,10 +41,10 @@ module DataMapper
       private
       def chimp_subscribe(options, email_content_type="html", double_optin=true)
         begin
-          @client.call("listSubscribe", @authorization, options[:mailing_list_id], options[:email], options[:merge_vars], email_content_type, double_optin)
+          @client.call("listSubscribe", @authorization, options[0].mailing_list_id, options[0].email, options[0].build_mail_merge(), email_content_type, double_optin)
         rescue XMLRPC::FaultException => e
-          Merb.logger e.faultCode
-          Merb.logger e.faultString
+          puts e.faultCode
+          puts e.faultString
         end    
       end
       
