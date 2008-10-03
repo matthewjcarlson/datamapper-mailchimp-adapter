@@ -4,7 +4,7 @@ http://mandarinsoda.com
 
 == DESCRIPTION:
 
-A Datamapper adapter to access the MailChimp mailing list API.  BIG work in progress at the moment, as this is my first time digging into DM adapters.
+A Datamapper adapter to access the MailChimp mailing list web services.  BIG work in progress at the moment, as this is my first time digging into DM adapters.
 
 == FEATURES/PROBLEMS:
 
@@ -15,16 +15,52 @@ This adapter currently supported the following features:
    - read_all will read the information for all users on a particular mailing list
    - udpdate will update a user's information on a particular list
 
-== SYNOPSIS:
+Still plenty to do and test (and write tests for dood mcgee's sakes)
 
-  FIXME (code sample of usage)
+== SYNOPSIS:
+  Setup database.yml with a mailchimp adapter:
+
+  adapter:  mailchimp
+  database: ''
+  username: mailchimp_user
+  password: mailchimp_password
+  mailing_list_id: list_id (optional - can specify in code as well) 
+  host:  localhost
+
+  Create a model that will hold attributes required by MailChimp APIs:
+class Mailee
+  include DataMapper::Resource
+
+
+  property :id, String, :serial => true, :key => true, :field => :_id
+  property :first_name, String
+  property :last_name, String
+  property :email, String
+  property :mailing_list_id, String
+
+   #callback method used by adapter to build mail merge info for MailChimp
+   def build_mail_merge()
+      {"EMAIL" => self.email, "FNAME" => self.first_name, "LNAME" => self.last_name }
+   end
+end
+
+  Try it out....merb -i, for instance:
+  m = Mailee.new
+  m.first_name = 'dood'
+  m.last_name = 'mcgee'
+  m.email = 'doodmcgee@yahoo.com'
+  m.mailing_list_id = '11232131231'
+  m.create
+
+  If it works, dood mcgee should get an opt-in email
 
 == REQUIREMENTS:
 
-* FIXME (list of requirements)
+ - Implement and test basic adapter operations
+ - Implement full Mail Chimp API 
 
 == INSTALL:
 
-sudo gem install
+Download from github and run rake install
 
 
