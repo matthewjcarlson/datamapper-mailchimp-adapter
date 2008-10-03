@@ -10,12 +10,13 @@ end
 module DataMapper
   module Adapters
     class MailchimpAdapter < AbstractAdapter
-      attr_reader :client, :authorization
+      attr_reader :client, :authorization, :mailing_list_id
       CHIMP_URL = "http://api.mailchimp.com/1.1/" 
       def initialize(name, uri_or_options)
         super(name, uri_or_options)
         @client = XMLRPC::Client.new2(CHIMP_URL)  
         @authorization = @client.call("login", uri_or_options[:username], uri_or_options[:password]) 
+        @mailing_list_id = uri_or_options[:mailing_list_id]
       end
 
       def create(resources)
@@ -41,7 +42,12 @@ module DataMapper
       private
       def chimp_subscribe(options, email_content_type="html", double_optin=true)
         begin
-          @client.call("listSubscribe", @authorization, options[0].mailing_list_id, options[0].email, options[0].build_mail_merge(), email_content_type, double_optin)
+          unless @mailing_list_id.nil?
+            mailing_list_id = @mailing_list_id
+          else
+            mailing_list_id = options[0].mailing_list_id
+          end
+          @client.call("listSubscribe", @authorization,mailing_list_id, options[0].email, options[0].build_mail_merge(), email_content_type, double_optin)
         rescue XMLRPC::FaultException => e
           puts e.faultCode
           puts e.faultString
