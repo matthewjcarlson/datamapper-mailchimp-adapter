@@ -20,7 +20,9 @@ module DataMapper
       end
 
       def create(resources)
-       chimp_subscribe(resources)
+        resources.map do |resource|
+          chimp_subscribe(resource)
+        end
       end
 
       def read_many(query)
@@ -40,14 +42,14 @@ module DataMapper
       end
       
       private
-      def chimp_subscribe(options, email_content_type="html", double_optin=true)
+      def chimp_subscribe(resource, email_content_type="html", double_optin=true)
         begin
           unless @mailing_list_id.nil?
             mailing_list_id = @mailing_list_id
           else
-            mailing_list_id = options[0].mailing_list_id
+            mailing_list_id = resource.mailing_list_id
           end
-          @client.call("listSubscribe", @authorization,mailing_list_id, options[0].email, options[0].build_mail_merge(), email_content_type, double_optin)
+          @client.call("listSubscribe", @authorization, mailing_list_id, resource.email, resource.build_mail_merge(), email_content_type, double_optin)
         rescue XMLRPC::FaultException => e
           puts e.faultCode
           puts e.faultString
