@@ -20,7 +20,7 @@ module DataMapper
       end
 
       def create(resources)
-        resources.map do |resource|
+        resources.each do |resource|
           chimp_subscribe(resource)
         end
       end
@@ -44,33 +44,52 @@ module DataMapper
       private
       def chimp_subscribe(resource, email_content_type="html", double_optin=true)
         begin
-          unless @mailing_list_id.nil?
-            mailing_list_id = @mailing_list_id
-          else
-            mailing_list_id = resource.mailing_list_id
-          end
-          @client.call("listSubscribe", @authorization, mailing_list_id, resource.email, resource.build_mail_merge(), email_content_type, double_optin)
+          @client.call("listSubscribe", @authorization, get_mailing_list(resource), resource.email, resource.build_mail_merge(), email_content_type, double_optin)
         rescue XMLRPC::FaultException => e
-          puts e.faultCode
-          puts e.faultString
+          raise CreateError e.faultString
         end    
       end
       
       def chimp_remove(options, delete_user=false, send_goodbye=true, send_notify=true)
-        @client.call("listUnsubscribe", @authorization, options[:mailing_list_id], options[:email], delete_user, send_goodbye, send_notify)    
+        begin
+          @client.call("listUnsubscribe", @authorization, options[:mailing_list_id], options[:email], delete_user, send_goodbye, send_notify) 
+        rescue XMLRPC::FaultException => e
+          raise DeleteError e.faultString
+        end   
       end
       
       def chimp_update(options, email_content_type="html", replace_interests=false)
-        @client.call("listUpdateMember", @authorization, options[:mailing_list_id], options[:email], email_content_type, replace_interests)    
+        begin
+          @client.call("listUpdateMember", @authorization, options[:mailing_list_id], options[:email], email_content_type, replace_interests) 
+        rescue XMLRPC::FaultException => e
+          raise UpdateError e.faultString
+        end   
       end
       
       def chimp_read_member(options)
-        @client.call("listMemberInfo", @authorization, options[:mailing_list_id], options[:email])    
+        begin
+          @client.call("listMemberInfo", @authorization, options[:mailing_list_id], options[:email])  
+        rescue XMLRPC::FaultException => e
+          raise ReadError e.faultString
+        end  
       end
       
       def chimp_all_members(options)
-        @client.call("listMembers", @authorization, options[:mailing_list_id], options[:email], options[:page], options[:limit])    
+        begin
+          @client.call("listMembers", @authorization, options[:mailing_list_id], options[:email], options[:page], options[:limit])
+        rescue XMLRPC::FaultException => e
+          raise ReadError e.faultString
+        end    
       end
+      
+      def get_mailing_list(resource)
+         unless @mailing_list_id.nil?
+            mailing_list_id = @mailing_list_id
+          else
+            mailing_list_id = resource.mailing_list_id
+          end
+      end
+        
     end  
   end
 end
