@@ -26,7 +26,7 @@ module DataMapper
       end
 
       def read_many(query)
-        chimp_all_members(extract_query_options(query))
+        chimp_all_members(extract_query_all_options(query))
       end
       
       def read_one(query)
@@ -76,7 +76,8 @@ module DataMapper
       
       def chimp_all_members(options)
         begin
-          @client.call("listMembers", @authorization, options[:mailing_list_id], options[:email], options[:page], options[:limit])
+          puts options[:mailing_list_id], options[:status]
+          @client.call("listMembers", @authorization, options[:mailing_list_id], 'subscribed', 1, 10)
         rescue XMLRPC::FaultException => e
           raise ReadError(e.faultString)
         end    
@@ -90,14 +91,16 @@ module DataMapper
         end
       end
       
-      def extract_query_options(query)
-         puts query.conditions
-          query.conditions.each do |condition|
-                     operator, property, value = condition
-            puts property.name
-            puts value
-            puts operator
+      def extract_query_all_options(query)
+        options = {}
+        query.conditions.each do |condition|
+          operator, property, value = condition
+          case property.name
+            when :mailing_list_id then options.merge!(:mailing_list_id => value) 
+            when :status then options.merge!(:status => value) else options.merge!(:status => 'subscribed')
           end
+        end
+        options
       end
         
     end  
