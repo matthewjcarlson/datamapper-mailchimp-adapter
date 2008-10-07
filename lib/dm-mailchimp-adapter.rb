@@ -44,7 +44,7 @@ module DataMapper
       private
       def chimp_subscribe(resource, email_content_type="html", double_optin=true)
         begin
-          @client.call("listSubscribe", @authorization, get_mailing_list(resource), resource.email, resource.build_mail_merge(), email_content_type, double_optin)
+          @client.call("listSubscribe", @authorization, get_mailing_list_from_resource(resource), resource.email, resource.build_mail_merge(), email_content_type, double_optin)
         rescue XMLRPC::FaultException => e
           raise CreateError(e.faultString)
         end    
@@ -76,28 +76,31 @@ module DataMapper
       
       def chimp_all_members(options)
         begin
-          puts options[:mailing_list_id], options[:status]
-          @client.call("listMembers", @authorization, options[:mailing_list_id], 'subscribed', 1, 10)
+          @client.call("listMembers", @authorization, options[:mailing_list_id], options[:status], 1, 10)
         rescue XMLRPC::FaultException => e
           raise ReadError(e.faultString)
         end    
       end
       
-      def get_mailing_list(resource)
+      def get_mailing_list_from_resource(resource)
         unless @mailing_list_id.nil?
           mailing_list_id = @mailing_list_id
         else
           mailing_list_id = resource.mailing_list_id
         end
       end
+     
       
       def extract_query_all_options(query)
         options = {}
+        options.merge!(:mailing_list_id => @mailing_list_id) 
+        options.merge!(:status => 'subscribed')
         query.conditions.each do |condition|
           operator, property, value = condition
           case property.name
             when :mailing_list_id then options.merge!(:mailing_list_id => value) 
-            when :status then options.merge!(:status => value) else options.merge!(:status => 'subscribed')
+            when :email then options.merge!(:email => value) 
+            when :status then options.merge!(:status => value) 
           end
         end
         options
