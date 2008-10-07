@@ -30,7 +30,7 @@ module DataMapper
       end
       
       def read_one(query)
-        chimp_read_member(query)
+        chimp_read_member(extract_query_all_options(query))
       end
       
       def update(attributes, query)
@@ -91,7 +91,7 @@ module DataMapper
       end
      
       
-      def extract_query_all_options(query)
+      def extract_query_options(query)
         options = {}
         options.merge!(:mailing_list_id => @mailing_list_id) 
         options.merge!(:status => 'subscribed')
