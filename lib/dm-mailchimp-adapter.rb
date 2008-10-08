@@ -33,10 +33,17 @@ module DataMapper
       end
       
       def read_one(query)
-         puts query.model
-        chimp_read_member(extract_query_options(query))
+        result = chimp_read_member(extract_query_options(query))
+        if result
+          query.model.load(
+            query.fields.map do |property|        
+              property.typecast(result[property.field.to_s])
+            end,
+            query
+          )
+        end
       end
-      
+    
       def update(attributes, query)
         chimp_update(query)
       end
@@ -47,12 +54,13 @@ module DataMapper
         delete += 1
       end
       
+      
       private
       def chimp_subscribe(resource, email_content_type="html", double_optin=true)
         begin
           @client.call("listSubscribe", @authorization, get_mailing_list_from_resource(resource), resource.email, resource.build_mail_merge(), email_content_type, double_optin)
         rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::CreateError(e.faultString)
+          raise MailChimpAPI::CreateError, e.faultString
         end    
       end
       
@@ -61,7 +69,7 @@ module DataMapper
           raise MailChimpAPI::DeleteError("Email and Mailing List Id can't be nil") if (options[:email].nil? || options[:mailing_list_id].nil?)
           @client.call("listUnsubscribe", @authorization, options[:mailing_list_id], options[:email], delete_user, send_goodbye, send_notify) 
         rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::DeleteError(e.faultString)
+          raise MailChimpAPI::DeleteError, e.faultString
         end   
       end
       
@@ -78,7 +86,7 @@ module DataMapper
           raise MailChimpAPI::ReadError("Email can't be nil") if (options[:email].nil?) 
           @client.call("listMemberInfo", @authorization, options[:mailing_list_id], options[:email])  
         rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::ReadError(e.faultString)
+          raise MailChimpAPI::ReadError, e.faultString
         end  
       end
       
@@ -86,9 +94,17 @@ module DataMapper
         begin
           @client.call("listMembers", @authorization, options[:mailing_list_id], options[:status], 0, 10)
         rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::ReadError(e.faultString)
+          raise MailChimpAPI::ReadError, e.faultString
         end    
       end
+      
+       def chimp_lists
+          begin
+            @client.call("lists", @authorization)
+          rescue XMLRPC::FaultException => e
+            raise MailChimpAPI::ReadError, e.faultString
+          end    
+        end
       
       def get_mailing_list_from_resource(resource)
         unless @mailing_list_id.nil?
