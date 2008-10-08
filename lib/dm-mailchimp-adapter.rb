@@ -26,11 +26,11 @@ module DataMapper
       end
 
       def read_many(query)
-        chimp_all_members(extract_query_all_options(query))
+        chimp_all_members(extract_query_options(query))
       end
       
       def read_one(query)
-        chimp_read_member(extract_query_all_options(query))
+        chimp_read_member(extract_query_options(query))
       end
       
       def update(attributes, query)
@@ -52,15 +52,16 @@ module DataMapper
       
       def chimp_remove(options, delete_user=false, send_goodbye=true, send_notify=true)
         begin
+          raise ReadError("Email and Mailing List Id can't be nil") if (options[:email].nil? || options[:mailing_list_id].nil?)
           @client.call("listUnsubscribe", @authorization, options[:mailing_list_id], options[:email], delete_user, send_goodbye, send_notify) 
         rescue XMLRPC::FaultException => e
           raise DeleteError(e.faultString)
         end   
       end
       
-      def chimp_update(options, email_content_type="html", replace_interests=false)
+      def chimp_update(options, merge_vars, email_content_type="html", replace_interests=false)
         begin
-          @client.call("listUpdateMember", @authorization, options[:mailing_list_id], options[:email], email_content_type, replace_interests) 
+          @client.call("listUpdateMember", @authorization, options[:mailing_list_id], options[:email], merge_vars, email_content_type, replace_interests) 
         rescue XMLRPC::FaultException => e
           raise UpdateError(e.faultString)
         end   
@@ -68,6 +69,7 @@ module DataMapper
       
       def chimp_read_member(options)
         begin
+          raise ReadError("Email can't be nil") if (options[:email].nil?) 
           @client.call("listMemberInfo", @authorization, options[:mailing_list_id], options[:email])  
         rescue XMLRPC::FaultException => e
           raise ReadError(e.faultString)
@@ -95,6 +97,7 @@ module DataMapper
         options = {}
         options.merge!(:mailing_list_id => @mailing_list_id) 
         options.merge!(:status => 'subscribed')
+       
         query.conditions.each do |condition|
           operator, property, value = condition
           case property.name
