@@ -4,7 +4,7 @@ http://mandarinsoda.com
 
 == DESCRIPTION:
 
-A Datamapper adapter to access the MailChimp mailing list web services.  BIG work in progress at the moment, as this is my first time digging into DM adapters.
+A Datamapper adapter to access the MailChimp mailing list web services.  Slightly less big work in progress at the moment, as this is my first time digging into DM adapters.
 
 == FEATURES/PROBLEMS:
 
@@ -45,6 +45,7 @@ class Mailee
 end
 
   Try it out....merb -i, for instance:
+
   m = Mailee.new
   m.first_name = 'dood'
   m.last_name = 'mcgee'
@@ -53,6 +54,10 @@ end
   m.create
 
   If it works, dood mcgee should get an opt-in email
+
+  read_all = Mailee.all()
+  read_one = Mailee.first(:email => 'doodmcgee@yahoo.com')
+  delete = Mailee.remove(:email => 'doodmcgee@yahoo.com')
 
 == REQUIREMENTS:
 
