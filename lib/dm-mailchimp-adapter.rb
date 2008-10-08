@@ -33,6 +33,7 @@ module DataMapper
       end
       
       def read_one(query)
+         puts query.model
         chimp_read_member(extract_query_options(query))
       end
       
@@ -83,7 +84,7 @@ module DataMapper
       
       def chimp_all_members(options)
         begin
-          @client.call("listMembers", @authorization, options[:mailing_list_id], options[:status], 1, 10)
+          @client.call("listMembers", @authorization, options[:mailing_list_id], options[:status], 0, 10)
         rescue XMLRPC::FaultException => e
           raise MailChimpAPI::ReadError(e.faultString)
         end    
@@ -100,7 +101,7 @@ module DataMapper
       def extract_query_options(query)
         options = {}
         options.merge!(:mailing_list_id => @mailing_list_id) 
-        options.merge!(:status => 'subscribed')
+        options.merge!(:status => 'active')
         query.conditions.each do |condition|
           operator, property, value = condition
           case property.name
