@@ -1,5 +1,6 @@
 require 'xmlrpc/client'
 require 'dm-core'
+require 'pp'
 module MailChimpAPI
    class CreateError < StandardError; end
    class ReadError < StandardError; end
@@ -29,7 +30,17 @@ module DataMapper
       end
 
       def read_many(query)
-        chimp_all_members(extract_query_options(query))
+        Collection.new(query) do |set|
+          results = chimp_all_members(extract_query_options(query))
+          if results
+            results.each do |result|
+            data = query.fields.map do |property|        
+              property.typecast(result[property.field.to_s])
+            end
+            set.load(data)  
+            end  
+          end 
+        end
       end
       
       def read_one(query)
