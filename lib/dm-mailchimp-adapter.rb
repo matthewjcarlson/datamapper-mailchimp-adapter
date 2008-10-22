@@ -86,7 +86,7 @@ module DataMapper
         end   
       end
       
-      def chimp_update(options, merge_vars="", email_content_type="html", replace_interests=false)
+      def chimp_update(options, merge_vars, email_content_type="html", replace_interests=false)
         begin
           @client.call("listUpdateMember", @authorization, options[:mailing_list_id], options[:email], merge_vars, email_content_type, replace_interests) 
         rescue XMLRPC::FaultException => e
@@ -131,7 +131,9 @@ module DataMapper
         merge_vars = {} 
         attributes.each do |prop,val|
            case prop.name
-           when "email" then merge_vars.merge!("EMAIL" => val)
+             when "email" then merge_vars.merge!("EMAIL" => val)
+             when "first_name" then merge_vars.merge!("FNAME" => val)
+             when "last_name" then merge_vars.merge!("LNAME" => val)
            end
         end
         merge_vars
