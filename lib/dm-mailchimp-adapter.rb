@@ -57,7 +57,7 @@ module DataMapper
     
       def update(attributes, query)
         updated = 0
-        chimp_update(query, extract_update_options(attributes))
+        chimp_update(extract_query_options(query), extract_update_options(attributes))
         updated += 1
       end
       
@@ -128,12 +128,13 @@ module DataMapper
       end
      
       def extract_update_options(attributes)
-        options = {}
-          options.merge!(:mailing_list_id => @mailing_list_id) 
+        merge_vars = {} 
         attributes.each do |prop,val|
-          options.merge!(prop.field.to_sym => val)
+           case prop.name
+           when "email" then merge_vars.merge!("EMAIL" => val)
+           end
         end
-        options
+        merge_vars
       end
       
       def extract_query_options(query)
