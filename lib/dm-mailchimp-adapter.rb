@@ -56,13 +56,15 @@ module DataMapper
       end
     
       def update(attributes, query)
-        chimp_update(query)
+        updated = 0
+        chimp_update(query, extract_update_options(attributes))
+        updated += 1
       end
       
       def delete(query) 
         deleted = 0
         chimp_remove(extract_query_options(query))
-        delete += 1
+        deleted += 1
       end
       
       
@@ -84,11 +86,11 @@ module DataMapper
         end   
       end
       
-      def chimp_update(options, merge_vars, email_content_type="html", replace_interests=false)
+      def chimp_update(options, merge_vars="", email_content_type="html", replace_interests=false)
         begin
           @client.call("listUpdateMember", @authorization, options[:mailing_list_id], options[:email], merge_vars, email_content_type, replace_interests) 
         rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::UpdateError(e.faultString)
+          raise MailChimpAPI::UpdateError, e.faultString
         end   
       end
       
@@ -125,6 +127,15 @@ module DataMapper
         end
       end
      
+      def extract_update_options(attributes)
+        options = {}
+          options.merge!(:mailing_list_id => @mailing_list_id) 
+        attributes.each do |prop,val|
+          options.merge!(prop.field.to_sym => val)
+        end
+        options
+      end
+      
       def extract_query_options(query)
         options = {}
         options.merge!(:mailing_list_id => @mailing_list_id) 
