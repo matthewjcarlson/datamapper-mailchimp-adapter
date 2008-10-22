@@ -56,8 +56,9 @@ end
   If it works, dood mcgee should get an opt-in email
 
   read_all = Mailee.all()
-  read_one = Mailee.first(:email => 'doodmcgee@yahoo.com')
-  delete = Mailee.remove(:email => 'doodmcgee@yahoo.com')
+  read_one = mailee = Mailee.first(:email => 'doodmcgee@yahoo.com')
+  delete = mailee.destroy
+  update = mailee.update_attributes(:email => 'doodmcracken@yahoo.com')
 
 == REQUIREMENTS:
 
