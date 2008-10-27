@@ -77,6 +77,14 @@ module DataMapper
         end    
       end
       
+      def chimp_batch_subscribe(resource, email_content_type="html", double_optin=true, update_existing=true, replace_interests=false)
+        begin
+          @client.call("listBatchSubscribe", @authorization, get_mailing_list_from_resource(resource), resource.email, , double_optin, update_existing, replace_interests)
+        rescue XMLRPC::FaultException => e
+          raise MailChimpAPI::CreateError, e.faultString
+        end    
+      end
+      
       def chimp_remove(options, delete_user=false, send_goodbye=true, send_notify=true)
         begin
           raise MailChimpAPI::DeleteError("Email and Mailing List Id can't be nil") if (options[:email].nil? || options[:mailing_list_id].nil?)
