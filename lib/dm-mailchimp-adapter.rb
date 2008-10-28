@@ -23,8 +23,9 @@ module DataMapper
       def create(resources)
         created = 0
         if resources.size > 1
+          batch = Array.new(resources.size)
           resources.each do |resource|
-            chimp_batch_subscribe(resource)
+            chimp_batch_subscribe(batch)
             created += 1  
           end
         else
