@@ -22,9 +22,14 @@ module DataMapper
 
       def create(resources)
         created = 0
-        resources.each do |resource|
-          chimp_subscribe(resource)
-          created += 1  
+        if resources.size > 1
+          resources.each do |resource|
+            chimp_batch_subscribe(resource)
+            created += 1  
+          end
+        else
+           chimp_subscribe(resources.first)
+           created += 1
         end
         created
       end
