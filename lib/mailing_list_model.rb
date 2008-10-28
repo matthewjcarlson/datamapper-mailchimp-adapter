@@ -1,7 +1,6 @@
 module DataMapper
   module Resource
     module MailingListModel
-      
       def self.include(base)   
         base.send :property :first_name, String
         base.send :property :last_name, String
