@@ -25,9 +25,10 @@ module DataMapper
         if resources.size > 1
           batch = Array.new(resources.size)
           resources.each do |resource|
-            chimp_batch_subscribe(batch)
-            created += 1  
+            batch << resource.build_mail_merge
+            created += 1
           end
+          chimp_batch_subscribe(batch)
         else
            chimp_subscribe(resources.first)
            created += 1

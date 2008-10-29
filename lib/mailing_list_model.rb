@@ -14,6 +14,9 @@ module DataMapper
         base.send :property :timestamp, String
       end
       
+       def build_mail_merge()
+          {"EMAIL" => self.email, "FNAME" => self.first_name, "LNAME" => self.last_name }
+       end
     end # MailingListModel
   end # Resource
 end # DataMapper
